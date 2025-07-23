@@ -1,6 +1,15 @@
 "use client";
 
-import { ExternalLink, Minus, Plus, Search } from "lucide-react";
+import {
+  ExternalLink,
+  Minus,
+  Plus,
+  Search,
+  CheckSquare,
+  Square,
+  Trash,
+  ListTodo,
+} from "lucide-react";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
@@ -154,10 +163,185 @@ export function Week1Day1() {
   );
 }
 
+interface TaskProps {
+  id?: string;
+  text: string;
+  check: boolean;
+}
+
 export function Week1Day2() {
+  const [data, setData] = useState<TaskProps>({
+    text: "",
+    check: false,
+  });
+  const { text, check } = data;
+
+  const [task, setTask] = useState<TaskProps[]>([]);
+  const newId = () => {
+    return (
+      "id_" + Date.now() + "_" + Math.random().toString(36).substring(2, 9)
+    );
+  };
+
+  function addTaks() {
+    if (text.trim() === "") return;
+    console.log("text:", text);
+    setTask([...task, { id: newId(), text, check }]);
+    setData({ ...data, text: "" });
+  }
+
+  function deleteTask(id: string) {
+    setTask((prev) => prev.filter((t) => t.id !== id));
+  }
+
+  function handleKeyPress(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter") {
+      addTaks();
+    }
+  }
+
+  const completed = task.filter((t) => t.check).length;
+  const total = task.length;
+  const progress = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+  return (
+    <div className="max-w-2xl mx-auto p-6">
+      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+          <h2 className="text-2xl font-bold text-white flex items-center">
+            <ListTodo className="mr-3 h-6 w-6" />
+            Task Manager
+          </h2>
+        </div>
+
+        <div className="p-6 border-b border-gray-100">
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <input
+                type="text"
+                value={text}
+                onChange={(e) => setData({ ...data, text: e.target.value })}
+                onKeyUp={handleKeyPress}
+                placeholder="Add a new task..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={addTaks}
+              disabled={text.trim() === ""}
+              className="px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center"
+            >
+              <Plus className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+        {task.length > 0 && (
+          <div className="px-6 py-4 bg-gray-50">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-gray-700">
+                Progress
+              </span>
+              <span className="text-sm text-gray-600">
+                {completed} of {total} tasks completed
+              </span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-3">
+              <div
+                className="bg-gradient-to-r from-green-400 to-green-500 h-3 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <div className="text-center mt-2">
+              <span className="text-lg font-bold text-green-600">
+                {progress}%
+              </span>
+            </div>
+          </div>
+        )}
+
+        <div className="max-h-96 overflow-y-auto">
+          {task.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              <ListTodo className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+              <p className="text-lg font-medium mb-1">No tasks yet</p>
+              <p className="text-sm">
+                Add your first task above to get started!
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-100">
+              {task.map(({ id, text, check }, index) => (
+                <div
+                  key={id}
+                  className={`flex items-center justify-between p-4 hover:bg-gray-50 transition-colors duration-200 ${
+                    check ? "bg-green-50" : ""
+                  }`}
+                >
+                  <div className="flex items-center flex-1">
+                    <span className="text-xs text-gray-400 mr-3 w-6">
+                      {index + 1}.
+                    </span>
+                    <p
+                      className={`text-sm flex-1 transition-all duration-200 ${
+                        check ? "line-through text-gray-400" : "text-gray-800"
+                      }`}
+                    >
+                      {text}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 ml-4">
+                    <button
+                      onClick={() =>
+                        setTask((prev) =>
+                          prev.map((t) =>
+                            t.id === id ? { ...t, check: !t.check } : t
+                          )
+                        )
+                      }
+                      className={`p-1 rounded transition-colors duration-200 ${
+                        check
+                          ? "text-green-600 hover:text-green-700"
+                          : "text-gray-400 hover:text-green-600"
+                      }`}
+                    >
+                      {check ? (
+                        <CheckSquare className="w-5 h-5" />
+                      ) : (
+                        <Square className="w-5 h-5" />
+                      )}
+                    </button>
+                    <button
+                      onClick={() => deleteTask(id!)}
+                      className="p-1 text-gray-400 hover:text-red-500 transition-colors duration-200 rounded"
+                    >
+                      <Trash className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {task.length > 0 && (
+          <div className="px-6 py-3 bg-gray-50 border-t border-gray-100">
+            <div className="flex justify-between text-xs text-gray-500">
+              <span>Total tasks: {total}</span>
+              <span>Remaining: {total - completed}</span>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export function Week1Day3() {
   return (
     <div>
-      <p>coming soon</p>
+      <p>Coming soon</p>
     </div>
   );
 }
