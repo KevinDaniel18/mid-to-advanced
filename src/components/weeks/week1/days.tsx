@@ -163,7 +163,7 @@ export function Week1Day1() {
   );
 }
 
-interface TaskProps {
+export interface TaskProps {
   id?: string;
   text: string;
   check: boolean;
@@ -203,6 +203,82 @@ export function Week1Day2() {
   const completed = task.filter((t) => t.check).length;
   const total = task.length;
   const progress = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+  return (
+    <Week1Day3
+      data={data}
+      setData={setData}
+      handleKeyPress={handleKeyPress}
+      addTaks={addTaks}
+      task={task}
+      setTask={setTask}
+      completed={completed}
+      total={total}
+      progress={progress}
+      deleteTask={deleteTask}
+    />
+  );
+}
+
+type Week1Day3Props = {
+  data: TaskProps;
+  setData: (data: TaskProps) => void;
+  handleKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  addTaks: () => void;
+  task: TaskProps[];
+  setTask: React.Dispatch<React.SetStateAction<TaskProps[]>>;
+  completed: number;
+  total: number;
+  progress: number;
+  deleteTask: (id: string) => void;
+};
+
+export function Week1Day3(props: Week1Day3Props | undefined) {
+  if (!props || !props.data) {
+    return (
+      <div className="p-4">
+        <p className="text-red-500 mb-2">
+          This component receives props from{" "}
+          <Link href={"/weeks/1/days/2"}>Week1Day2</Link> component
+        </p>
+        <pre className="bg-gray-900 text-green-100 p-4 rounded-lg overflow-x-auto text-sm font-mono shadow-md">
+          <code>
+            {`type Week1Day3Props = {
+  data: TaskProps;
+  setData: (data: TaskProps) => void;
+  handleKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  addTaks: () => void;
+  task: TaskProps[];
+  setTask: React.Dispatch<React.SetStateAction<TaskProps[]>>;
+  completed: number;
+  total: number;
+  progress: number;
+  deleteTask: (id: string) => void;
+};
+
+export function Week1Day3(props: Week1Day3Props | undefined) {
+  // Logic here...
+}`}
+          </code>
+        </pre>
+      </div>
+    );
+  }
+
+  const {
+    data,
+    setData,
+    handleKeyPress,
+    addTaks,
+    task,
+    setTask,
+    completed,
+    total,
+    progress,
+    deleteTask,
+  } = props;
+
+  const { text } = data;
 
   return (
     <div className="max-w-2xl mx-auto p-6">
@@ -294,7 +370,7 @@ export function Week1Day2() {
                   <div className="flex items-center gap-2 ml-4">
                     <button
                       onClick={() =>
-                        setTask((prev) =>
+                        setTask((prev: TaskProps[]) =>
                           prev.map((t) =>
                             t.id === id ? { ...t, check: !t.check } : t
                           )
@@ -338,7 +414,7 @@ export function Week1Day2() {
   );
 }
 
-export function Week1Day3() {
+export function Week1Day4() {
   return (
     <div>
       <p>Coming soon</p>
