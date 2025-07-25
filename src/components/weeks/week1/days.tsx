@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import {
   ExternalLink,
   Minus,
@@ -9,6 +11,8 @@ import {
   Square,
   Trash,
   ListTodo,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
@@ -415,9 +419,31 @@ export function Week1Day3(props: Week1Day3Props | undefined) {
 }
 
 export function Week1Day4() {
+  const [inputValue, setInputValue] = useLocalStorage<string>("week1day4", "");
+  const isOnline = useOnlineStatus();
   return (
-    <div>
-      <p>Coming soon</p>
+    <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-md border-gray-200">
+      <h2 className="text-lg font-semibold text-gray-800 mb-4">
+        This works using custom hooks, check the console in Local Storage
+      </h2>
+      <input
+        type="text"
+        placeholder="write something..."
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 text-gray-700 placeholder:text-gray-400"
+      />
+
+      <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
+        {isOnline ? (
+          <Wifi className="text-green-600 h-5 w-5" />
+        ) : (
+          <WifiOff className="text-red-600 h-5 w-5" />
+        )}
+        <span className="font-medium">
+          State: <strong>{isOnline ? "Online" : "Offline"}</strong>
+        </span>
+      </div>
     </div>
   );
 }
